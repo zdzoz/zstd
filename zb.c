@@ -1,6 +1,5 @@
-#define Z_IMPL
 #define ZB_IMPL
-#include "zda.h"
+#define ZB_INCL_ZDA
 #include "zb.h"
 
 int main(void)
@@ -11,7 +10,9 @@ int main(void)
     zda_push(&srcs, "main.c");
 
     str_da flags = { 0 };
-    zda_push(&flags, "-Wall", "-Wextra", "-Werror");
+    zda_push(&flags, "-Wall");
+    zda_push(&flags, "-Wextra");
+    zda_push(&flags, "-Werror");
     zda_push(&flags, "-std=c99");
     zda_push(&flags, "-pedantic");
 

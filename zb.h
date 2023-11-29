@@ -5,11 +5,14 @@
 extern "C" {
 #endif
 
-/////// DYNAMIC ARRAY
 #include <stdint.h>
 
 #define Z_TRUE 1
 #define Z_FALSE 0
+
+#ifdef ZB_INCL_ZDA
+
+#include <stdarg.h>
 
 #ifndef Z_NO_ALLOC
 #include <stdlib.h>
@@ -18,45 +21,44 @@ extern "C" {
 #define Z_FREE(ptr) free(ptr)
 #endif
 
-#ifdef ZB_INCLUDE_ZDA
+#ifndef ZDA_INIT_CAP
+#define ZDA_INIT_CAP 8
+#endif
 
-#define zda(type)          \
-    struct {               \
-        type* data;        \
-        uint32_t len;      \
-        uint32_t capacity; \
+#define zda(type)     \
+    struct {          \
+        uint32_t len; \
+        uint32_t cap; \
+        type* data;   \
     }
 
-typedef zda(void*) zda_voidp;
-
-#define ZDA_INIT_CAP 8
-#define _z_zda_push(da, item)                                                             \
-    do {                                                                              \
-        if ((da)->len >= (da)->capacity) {                                            \
-            (da)->capacity = (da)->capacity == 0 ? ZDA_INIT_CAP : (da)->capacity * 2; \
-            (da)->data = (void**)Z_REALLOC((da)->data, (da)->capacity * sizeof(*(da)->data)); \
-        }                                                                             \
-        (da)->data[(da)->len++] = (item);                                             \
+#define zda_push(da, item)                                                       \
+    do {                                                                         \
+        if ((da)->len >= (da)->cap) {                                            \
+            (da)->cap = (da)->cap == 0 ? ZDA_INIT_CAP : (da)->cap * 2;           \
+            (da)->data = Z_REALLOC((da)->data, (da)->cap * sizeof(*(da)->data)); \
+        }                                                                        \
+        (da)->data[(da)->len++] = (item);                                        \
     } while (0)
 
-#define zda_push(da, ...) \
-    do {                   \
-        _z_zda_pushv((zda_voidp*)da, __VA_ARGS__, NULL); \
-    } while (0)
+#define zda_pop(da) ((da)->len > 0 ? (da)->data[--(da)->len] : NULL)
 
 #define zda_free(da)        \
     do {                    \
         Z_FREE((da)->data); \
         (da)->data = NULL;  \
         (da)->len = 0;      \
-        (da)->capacity = 0; \
+        (da)->cap = 0;      \
     } while (0)
 
-typedef zda(const char*) zsrcs;
-typedef zda(const char*) zflags;
-static void __unused _z_zda_pushv(zda_voidp* da, ...);
-
-#endif // ZB_INCLUDE_ZDA
+#define zda_pushv(type, da, ...)                       \
+    do {                                               \
+        type item[] = { __VA_ARGS__ };                 \
+        size_t count = sizeof(item) / sizeof(item[0]); \
+        for (size_t i = 0; i < count; i++)             \
+            zda_push(da, item[i]);                     \
+    } while (0)
+#endif // ZB_INCL_ZDA
 
 typedef enum zb_log_level {
     ERROR = 0,
@@ -95,22 +97,6 @@ extern "C" {
 #include <stdarg.h>
 #include <stdio.h>
 #include <unistd.h>
-
-#ifdef ZB_INCLUDE_ZDA
-
-// FIXME: doesnt work with non pointers
-static void __unused _z_zda_pushv(zda_voidp* da, ...) {
-    va_list args;
-    va_start(args, da);
-    void* item = va_arg(args, void*);
-    while (item) {
-        _z_zda_push(da, item);
-        item = va_arg(args, void*);
-    }
-    va_end(args);
-}
-
-#endif // ZB_INCLUDE_ZDA
 
 static zbinfo zb_init()
 {

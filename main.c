@@ -2,6 +2,6 @@
 
 int main(void)
 {
-    printf("NOTHING IN MAIN.C YET\n");
+    printf("\n-- main.c is empty --\n");
     return 0;
 }

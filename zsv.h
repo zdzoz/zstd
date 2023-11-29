@@ -1,23 +1,18 @@
 #ifndef H_ZSV
 #define H_ZSV
 
-#include <stdio.h>
+#include <stdint.h>
 
-// TODO: make stbi like header library
-
-static size_t _z_strlen(const char* str)
-{
-    size_t size = 0;
-    while (*str++ != 0)
-        size++;
-    return size;
-}
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct zsv {
     const char* cstr;
-    size_t len;
+    uint32_t len;
 } zsv;
 
+static uint32_t _z_strlen(const char* str);
 static zsv zsv_cstr(const char* str);
 static zsv zsv_cstr_delim(const char* str, char delim);
 static int zsv_eq(zsv a, zsv b);
@@ -25,9 +20,24 @@ static int zsv_eq(zsv a, zsv b);
 #define zsv_fmt "%.*s"
 #define zsv_arg(zsv) (int)(zsv.len), zsv.cstr
 
+#ifdef __cplusplus
+}
+#endif
+
 #endif // H_ZSV
 
 #ifdef Z_IMPL
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+static uint32_t _z_strlen(const char* str)
+{
+    size_t size = 0;
+    while (*str++ != 0)
+        size++;
+    return size;
+}
 
 static zsv zsv_cstr(const char* str)
 {
@@ -65,4 +75,7 @@ static int zsv_eq(zsv a, zsv b)
     return len ? *s1 - *s2 : 0;
 }
 
+#ifdef __cplusplus
+}
+#endif
 #endif // Z_IMPL
