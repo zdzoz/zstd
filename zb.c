@@ -1,39 +1,51 @@
-#include <string.h>
-
+#define Z_IMPL
 #define ZB_IMPL
+#include "zda.h"
 #include "zb.h"
 
 int main(void)
 {
     // main app
-    zbinfo build = zb_init();
-    zb_add(&build, "main.c");
-    zb_flags(&build, "-Wall", "-Wextra", "-Werror", "-std=c99", "-pedantic"); // cflags
-    zb_flags(&build, "-fsanitize=address,undefined"); // lflags
-    build.debug = Z_TRUE;
-    build.out = "zstd";
+    typedef zda(const char*) str_da;
+    str_da srcs = { 0 };
+    zda_push(&srcs, "main.c");
+
+    str_da flags = { 0 };
+    zda_push(&flags, "-Wall", "-Wextra", "-Werror");
+    zda_push(&flags, "-std=c99");
+    zda_push(&flags, "-pedantic");
+
+    zbinfo b = zb_init();
+    b.srcs_len = srcs.len;
+    b.srcs = srcs.data;
+    b.flags_len = flags.len;
+    b.flags = flags.data;
+    b.out = "zstd";
 
     printf("[Build Info]\n");
-    zb_info(&build);
-    zb_build(&build);
+    zb_info(&b);
+    zb_build(&b);
 
     // tests
+    str_da test_srcs = { 0 };
+    zda_push(&test_srcs, "test.c");
+
     zbinfo test = zb_init();
-    zb_add(&test, "test.c");
-    test.flags = build.flags;
+    test.srcs_len = test_srcs.len;
+    test.srcs = test_srcs.data;
+    test.flags_len = b.flags_len;
+    test.flags = b.flags;
     test.debug = Z_FALSE;
     test.out = "test";
     test.log_level = ERROR;
-    test.outdir = "build";
 
     zb_build(&test);
     zb_run(&test);
 
-    zb_run(&build);
+    zb_run(&b);
 
-    zb_free(&build);
-    // cleanup shared ptr
-    test.flags.data = NULL;
-    zb_free(&test);
+    zda_free(&srcs);
+    zda_free(&flags);
+    zda_free(&test_srcs);
     return 0;
 }

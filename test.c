@@ -4,7 +4,8 @@
 #include "zda.h"
 #include "zsv.h"
 
-ZT(test_zsv) {
+ZT(zsv)
+{
     const char* full_name = "Oskar Zdziarski";
 
     zsv first_name = zsv_cstr_delim(full_name, ' ');
@@ -18,16 +19,16 @@ ZT(test_zsv) {
     return Z_SUCCESS;
 }
 
-ZT(test_zda)
+ZT(zda)
 {
     typedef zda(int) intda;
 
     intda nums = { 0 };
-    zda_add(&nums, 1);
-    zda_add(&nums, 2);
-    zda_add(&nums, 3);
-    zda_add(&nums, 4);
-    zda_add(&nums, 5);
+    zda_push(&nums, 1);
+    zda_push(&nums, 2);
+    zda_push(&nums, 3);
+    zda_push(&nums, 4);
+    zda_push(&nums, 5);
 
     ZT_ASSERT(nums.len == 5);
     ZT_ASSERT(nums.data[0] == 1);
@@ -38,6 +39,12 @@ ZT(test_zda)
 
     zda_free(&nums);
     return Z_SUCCESS;
+}
+
+ZT(zda_push_multiple)
+{
+
+    return 0;
 }
 
 ZT_MAIN()
