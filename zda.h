@@ -5,9 +5,6 @@
 extern "C" {
 #endif
 
-#include <stdarg.h>
-#include <stdint.h>
-
 #ifndef Z_NO_ALLOC
 #include <stdlib.h>
 #define Z_ALLOC(size) malloc(size)
@@ -26,6 +23,7 @@ extern "C" {
         type* data;   \
     }
 
+#pragma clang diagnostic ignored "-Wincompatible-pointer-types"
 #define zda_push(da, item)                                                       \
     do {                                                                         \
         if ((da)->len >= (da)->cap) {                                            \
@@ -33,6 +31,14 @@ extern "C" {
             (da)->data = Z_REALLOC((da)->data, (da)->cap * sizeof(*(da)->data)); \
         }                                                                        \
         (da)->data[(da)->len++] = (item);                                        \
+    } while (0)
+
+#define zda_pushl(type, da, ...)                       \
+    do {                                               \
+        type item[] = { __VA_ARGS__ };                 \
+        size_t count = sizeof(item) / sizeof(item[0]); \
+        for (size_t i = 0; i < count; i++)             \
+            zda_push(da, item[i]);                     \
     } while (0)
 
 #define zda_pop(da) ((da)->len > 0 ? (da)->data[--(da)->len] : NULL)
@@ -43,14 +49,6 @@ extern "C" {
         (da)->data = NULL;  \
         (da)->len = 0;      \
         (da)->cap = 0;      \
-    } while (0)
-
-#define zda_pushv(type, da, ...)                       \
-    do {                                               \
-        type item[] = { __VA_ARGS__ };                 \
-        size_t count = sizeof(item) / sizeof(item[0]); \
-        for (size_t i = 0; i < count; i++)             \
-            zda_push(da, item[i]);                     \
     } while (0)
 
 #ifdef __cplusplus

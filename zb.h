@@ -150,6 +150,7 @@ static void zb_info(zbinfo* b)
 // TODO: make link object files
 // TODO: only compile changed files
 // TODO: make string builder
+// FIXME: fix relative paths
 static void zb_build(zbinfo* b)
 {
     zda(const char*) args = { 0 };
