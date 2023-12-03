@@ -29,9 +29,10 @@ ZT(zda_int)
 
 ZT(zda_pushl_int) {
     typedef zda(int) int_da;
+    #define int_da_push(da, ...) zda_pushl(int, da, __VA_ARGS__)
 
     int_da nums = { 0 };
-    zda_pushl(int, &nums, 1, 2, 3, 4, 5);
+    int_da_push(&nums, 1, 2, 3, 4, 5);
 
     ZT_ASSERT(nums.len == 5);
     ZT_ASSERT(nums.data[0] == 1);

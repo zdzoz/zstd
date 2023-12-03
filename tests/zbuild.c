@@ -1,5 +1,4 @@
 #define ZB_IMPL
-#define ZB_INCL_ZDA
 #include "../zb.h"
 
 int main(void)

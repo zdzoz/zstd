@@ -12,9 +12,6 @@ extern "C" {
 #define Z_TRUE 1
 #define Z_FALSE 0
 
-#define ZB_INCL_ZDA
-#ifdef ZB_INCL_ZDA
-
 #include <stdarg.h>
 
 #ifndef Z_NO_ALLOC
@@ -61,8 +58,6 @@ extern "C" {
         (da)->len = 0;      \
         (da)->cap = 0;      \
     } while (0)
-
-#endif // ZB_INCL_ZDA
 
 typedef enum zb_log_level {
     ERROR = 0,
@@ -133,6 +128,7 @@ static void zb_info(zbinfo* b)
     printf("  out: %s\n", b->artifacts.out);
     printf("  bld_dir: %s\n", b->artifacts.bld_dir);
     printf("  obj_dir: %s\n", b->artifacts.obj_dir);
+    printf("debug: %s\n", b->debug ? "true" : "false");
     printf("srcs[%d]: ", b->srcs_len);
     for (uint32_t i = 0; i < b->srcs_len; i++) {
         printf("%s ", b->srcs[i]);

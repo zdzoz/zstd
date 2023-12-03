@@ -1,4 +1,5 @@
 build
 .DS_Store
 tests/test
-tests/zb_test
+zbuild
+*.dSYM

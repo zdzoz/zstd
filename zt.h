@@ -15,12 +15,12 @@ typedef zda(_zt_func_t) _zt_da;
 #define Z_SUCCESS 0
 #define Z_FAILURE 1
 
-#define ZT_ASSERT(cond)                                                            \
-    do {                                                                           \
-        if (!(cond)) {                                                             \
-            printf("[ASSERT] %s -- %s:%d -> %s\n", __func__, __FILE__, __LINE__, #cond); \
-            return Z_FAILURE;                                                      \
-        }                                                                          \
+#define ZT_ASSERT(cond)                                                                           \
+    do {                                                                                          \
+        if (!(cond)) {                                                                            \
+            fprintf(stderr, "[ASSERT] %s -- %s:%d -> %s\n", __func__, __FILE__, __LINE__, #cond); \
+            return Z_FAILURE;                                                                     \
+        }                                                                                         \
     } while (0)
 
 #define ZT_MAIN()                                               \
